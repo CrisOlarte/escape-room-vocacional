@@ -1,0 +1,28 @@
+<div class="pantalla">
+  <h2>🧩 Sala 3: Reto Visual</h2>
+  <p class="subtitle mb-4">Arrastra cada ícono y suéltalo en el área profesional que corresponde</p>
+
+  <div class="drag-container">
+    <div class="draggables">
+      <div class="draggable" draggable="true" data-area="Salud">👨‍⚕️</div>
+      <div class="draggable" draggable="true" data-area="Tecnología">💻</div>
+      <div class="draggable" draggable="true" data-area="Educación">📚</div>
+       <div class="draggable" draggable="true" data-area="Derecho">⚖️</div>
+      <div class="draggable" draggable="true" data-area="Administración">📊</div>
+      <div class="draggable" draggable="true" data-area="Artes">🎨</div>
+    </div>
+
+    <div class="dropzones">
+      <div class="dropzone" data-accept="Salud">Salud</div>
+      <div class="dropzone" data-accept="Derecho">Derecho</div>
+      <div class="dropzone" data-accept="Tecnología">Tecnología</div>
+      <div class="dropzone" data-accept="Artes">Artes</div>
+      <div class="dropzone" data-accept="Educación">Educación</div>
+      <div class="dropzone" data-accept="Administración">Administración</div>
+    </div>
+  </div>
+
+  <button onclick="verificarRespuestas()" class="main-button mt-6 glow-effect">✅ Verificar</button>
+  <div id="resultadoRompecabezas" class="mt-4"></div>
+  <button onclick="mostrarMenu()" class="volver">← Volver al menú</button>
+</div>

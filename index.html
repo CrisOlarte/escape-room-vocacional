@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Escape Room Vocacional</title>
+    <style>
+        .pregunta {
+            margin-bottom: 20px;
+            /* Espacio entre preguntas */
+        }
+
+        .pregunta p {
+            /* Esto apunta al párrafo dentro de .pregunta */
+            margin-bottom: 15px;
+            /* Ajusta este valor para más o menos espacio */
+        }
+
+        .opciones {
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            /* Permite que las opciones se distribuyan en varias filas */
+            gap: 10px;
+            /* Espacio entre las opciones */
+        }
+
+        label {
+            background: rgba(255, 255, 255, 0.1);
+            /* Fondo semitransparente */
+            border-radius: 10px;
+            /* Bordes redondeados */
+            padding: 10px;
+            /* Espaciado interno */
+            cursor: pointer;
+            /* Cambia el cursor al pasar sobre la opción */
+            transition: background 0.3s;
+            /* Transición suave para el fondo */
+            flex: 1 1 calc(50% - 10px);
+            /* Dos columnas con espacio entre ellas */
+        }
+
+        label:hover {
+            background: rgba(255, 255, 255, 0.2);
+            /* Efecto al pasar el mouse */
+        }
+
+        input[type="radio"] {
+            margin-right: 10px;
+            /* Espacio entre el botón de radio y el texto */
+        }
+
+
+        /*------------------------------------------------------------------------*/
+
+
+        .drag-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        .draggables,
+        .dropzones {
+            display: grid;
+            grid-template-columns: repeat(3, 140px);
+            /* 3 columnas fijas de 140px */
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .draggable {
+            font-size: 2rem;
+            background: #ffccff33;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: grab;
+            user-select: none;
+            border: 2px dashed transparent;
+            transition: 0.2s;
+        }
+
+        .draggable.dragging {
+            opacity: 0.5;
+        }
+
+        .dropzone {
+            background: #ffffff11;
+            border: 2px dashed #ffb6c1;
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 60px;
+            font-weight: bold;
+            text-align: center;
+            color: #fff;
+            word-break: break-word;
+            white-space: normal;
+            overflow-wrap: break-word;
+            width: 140px;
+            /* coincide con las columnas */
+        }
+
+        .dropzone.over {
+            background: #ffffff22;
+        }
+
+        .boton-pequeno {
+            font-size: 0.9rem;
+            padding: 8px 20px;
+            border-radius: 12px;
+            background-color: #ff66b2;
+            color: white;
+            box-shadow: 0 4px 8px rgba(255, 102, 178, 0.4);
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .boton-pequeno:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 102, 178, 0.5);
+        }
+
+
+        /*------------------------------------------------------------------------*/
+
+        /* Contenedor principal del juego */
+        #contenido .pantalla {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Estilo del contenedor del quiz */
+        .quiz-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            color: white;
+            box-shadow: 0 0 30px rgba(255, 105, 180, 0.1);
+        }
+
+        /* Pista visual */
+        #pista {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            line-height: 1.2;
+        }
+
+        /* Opciones del quiz */
+        #opciones {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Botón de opción */
+        .opcion-button {
+            background-color: #ff66b2;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 999px;
+            font-size: 1.05rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(255, 102, 178, 0.4);
+        }
+
+        .opcion-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(255, 102, 178, 0.5);
+        }
+
+        /* Resultado del quiz */
+        #resultadoProfesion {
+            margin-top: 1.2rem;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* Botón de siguiente o ir a final */
+        .boton-pequeno {
+            margin-top: 1.2rem;
+            background-color: #66d9ff;
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 999px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(102, 217, 255, 0.3);
+        }
+
+        .boton-pequeno:hover {
+            transform: scale(1.05);
+            background-color: #5cc3e8;
+        }
+
+        #resultadoProfesion {
+            margin-top: 1.2rem;
+            font-weight: bold;
+            font-size: 1.1rem;
+            min-height: 1.5rem;
+            /* para evitar saltos cuando aparece */
+        }
+
+        /* Añade separación antes del botón de siguiente */
+        #botonSiguiente {
+            margin-top: 1.5rem;
+        }
+
+        /*------------------------------------------------------------------------*/
+
+
+
+
+        .container {
+            text-align: center;
+        }
+
+        .puerta {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            transition: transform 0.5s;
+        }
+
+        input[type="text"] {
+            width: 100px;
+            padding: 10px;
+            margin: 20px 0;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #00ff00;
+            color: #000;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #00cc00;
+        }
+
+        .mensaje {
+            margin-top: 20px;
+            font-size: 18px;
+            height: 30px;
+        }
+
+        .correcto {
+            color: #00ff00;
+            animation: abrir 1s forwards;
+        }
+
+        .incorrecto {
+            color: #ff0000;
+            animation: vibrar 0.5s forwards;
+        }
+
+        @keyframes abrir {
+            0% {
+                transform: scale(1);
+            }
+
+            100% {
+                transform: scale(1.1);
+            }
+        }
+
+        @keyframes vibrar {
+            0% {
+                transform: translate(0);
+            }
+
+            25% {
+                transform: translate(-5px);
+            }
+
+            50% {
+                transform: translate(5px);
+            }
+
+            75% {
+                transform: translate(-5px);
+            }
+
+            100% {
+                transform: translate(0);
+            }
+        }
+
+        /*------------------------------------------------------------------------*/
+
+
+
+        #flash-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0, 255, 0, 0.2) 0%, rgba(0, 255, 0, 0.05) 70%, transparent 100%);
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+            animation: flash 1s ease-out forwards;
+        }
+
+        @keyframes flash {
+            0% {
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .oculto {
+            display: none;
+        }
+
+        .boton-final {
+            padding: 12px 32px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ff7eb3, #ff758c);
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255, 118, 170, 0.6);
+            transition: all 0.3s ease;
+        }
+
+        .boton-final:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #ff758c, #ff5e8e);
+        }
+
+        @keyframes aparecer {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .pista-final {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: #ff99cc;
+            text-align: center;
+            line-height: 1.5;
+            text-shadow: 0 0 10px #ff33aa;
+            animation: aparecer 0.8s ease-in-out;
+        }
+
+        @keyframes aparecer {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /*------------------------------------------------------------------------*/
+        body {
+            background: linear-gradient(135deg, #1f1f2e, #2e2e3e);
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .aventura-container {
+            background-color: #2b2b3d;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 700px;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        .titulo {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #00ffcc;
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+        }
+
+        .pregunta {
+            margin-bottom: 20px;
+            font-size: 1.25rem;
+            line-height: 1.6;
+            background: none;
+            padding: 10px 0;
+            border-radius: 0;
+            border-left: none;
+        }
+
+
+        .pregunta p {
+            margin-bottom: 15px;
+        }
+
+        .opciones {
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .opciones button {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            flex: 1 1 calc(50% - 10px);
+            font-size: 16px;
+            border: 2px solid transparent;
+            color: white;
+            text-align: left;
+        }
+
+        .opciones button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .boton-pequeno {
+            font-size: 0.9rem;
+            padding: 8px 20px;
+            border-radius: 12px;
+            background-color: #ff66b2;
+            color: white;
+            box-shadow: 0 4px 8px rgba(255, 102, 178, 0.4);
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .boton-pequeno:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 102, 178, 0.5);
+        }
+
+        .resultado-final {
+            font-size: 1.3rem;
+            margin-top: 20px;
+            color: #00ffcc;
+            animation: aparecer 1s ease forwards;
+            background: rgba(0, 255, 204, 0.1);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #00ffcc;
+        }
+
+        .volver-btn {
+            font-size: 0.9rem;
+            padding: 8px 20px;
+            border-radius: 12px;
+            background-color: #ff66b2;
+            color: white;
+            box-shadow: 0 4px 8px rgba(255, 102, 178, 0.4);
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 20px;
+        }
+
+        .volver-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 102, 178, 0.5);
+        }
+
+        .iniciar-btn {
+            background: linear-gradient(45deg, #00ffcc, #00bcd4);
+            color: #1f1f2e;
+            padding: 20px 40px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
+        }
+
+        .iniciar-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 255, 204, 0.5);
+        }
+
+        .intro {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #ccc;
+        }
+
+        /* Animaciones para transiciones suaves */
+        .seccion {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .seccion.ocultar {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        .seccion.mostrar {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes aparecer {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .resultado-ok {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .mensaje-ok {
+            color: #00ffcc;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        .mensaje-error {
+            color: #ff6666;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .boton-mediano {
+            background: linear-gradient(45deg, #ff66b2, #ff99cc);
+            color: white;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(255, 102, 178, 0.3);
+        }
+
+        .boton-mediano:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 102, 178, 0.4);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /* === Reset básico === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23, #1a1a2e, #16213e, #1e1e2f);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* === Partículas decorativas === */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 105, 180, 0.6);
+            border-radius: 50%;
+            animation: float 6s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                opacity: 0;
+                transform: translateY(100vh) rotate(0deg);
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) rotate(360deg);
+            }
+        }
+
+        /* === Pantallas === */
+        .pantalla {
+            display: none;
+            width: 100%;
+            max-width: 800px;
+            animation: slideInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            padding: 50px 40px;
+            border-radius: 25px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 2;
+        }
+
+        .pantalla:not(.oculto) {
+            display: block;
+        }
+
+        .oculto {
+            display: none !important;
+        }
+
+        /* === Animaciones === */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 105, 180, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 20px rgba(255, 105, 180, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 105, 180, 0);
+            }
+        }
+
+        /* === Encabezados === */
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ff69b4, #ffccff, #91d5ff);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientText 3s ease infinite;
+            font-weight: 800;
+            text-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
+        }
+
+        @keyframes gradientText {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            margin-bottom: 40px;
+            color: #ffccee;
+            font-weight: 600;
+            text-shadow: 0 0 20px rgba(255, 204, 238, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 40px;
+            color: #b8b8ff;
+            font-weight: 300;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        /* === Botones === */
+        button {
+            background: linear-gradient(45deg, #ff69b4, #ff85c1);
+            padding: 16px 32px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 10px 25px rgba(255, 105, 180, 0.3);
+            position: relative;
+            overflow: hidden;
+            min-width: 200px;
+        }
+
+        button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(255, 105, 180, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        button:hover:before {
+            left: 100%;
+        }
+
+        button:active {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        .main-button {
+            font-size: 1.4rem;
+            padding: 20px 40px;
+            margin-top: 30px;
+        }
+
+        /* === Salas === */
+        .salas {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+            margin-top: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .sala-button {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 105, 180, 0.3);
+            padding: 25px 30px;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 1.2rem;
+            font-weight: 500;
+            text-align: left;
+            backdrop-filter: blur(10px);
+        }
+
+        .sala-button:hover {
+            background: rgba(255, 105, 180, 0.15);
+            border-color: #ff69b4;
+            transform: translateX(10px) scale(1.02);
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.2);
+        }
+
+        .sala-icon {
+            font-size: 2.5rem;
+            min-width: 60px;
+            text-align: center;
+            animation: bounce 2s infinite;
+        }
+
+        .sala-content {
+            flex: 1;
+        }
+
+        .sala-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #ffccff;
+        }
+
+        .sala-desc {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            color: #b8b8ff;
+        }
+
+        /* === Botón volver === */
+        .volver {
+            background: transparent;
+            border: 2px solid rgba(145, 213, 255, 0.5);
+            color: #91d5ff;
+            padding: 12px 24px;
+            margin-top: 40px;
+            border-radius: 25px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            min-width: auto;
+        }
+
+        .volver:hover {
+            background: rgba(145, 213, 255, 0.1);
+            border-color: #91d5ff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(145, 213, 255, 0.2);
+        }
+
+        /* === Contenedor dinámico === */
+        #contenido {
+            text-align: left;
+        }
+
+        /* === Responsive === */
+        @media (max-width: 768px) {
+            .pantalla {
+                padding: 30px 25px;
+                margin: 10px;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+            }
+
+            .sala-button {
+                padding: 20px;
+                font-size: 1.1rem;
+            }
+
+            .sala-icon {
+                font-size: 2rem;
+                min-width: 50px;
+            }
+        }
+
+        /* === Efectos adicionales === */
+        .glow-effect {
+            position: relative;
+        }
+
+        .glow-effect:after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #ff69b4, #91d5ff, #ffccff, #ff69b4);
+            border-radius: inherit;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            background-size: 300% 300%;
+            animation: gradientRotate 3s linear infinite;
+        }
+
+        @keyframes gradientRotate {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .glow-effect:hover:after {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="flash-effect" class="oculto"></div>
+
+
+
+    <!-- Partículas decorativas -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Pantalla de inicio -->
+    <div id="inicio" class="pantalla">
+        <h1>🎓 Escape Room Vocacional</h1>
+        <p class="subtitle">Explora tus habilidades y descubre qué carrera puede ser perfecta para ti</p>
+        <button onclick="mostrarMenu()" class="main-button glow-effect">🚀 Comenzar Aventura</button>
+    </div>
+
+
+    <!-- Menú de selección -->
+    <div id="menu" class="pantalla oculto">
+        <h2>🎯 Selecciona tu Desafío</h2>
+        <div class="salas">
+
+            <!-- Sala 1: Personalidad -->
+            <div onclick="cargarSala('salas/personalidad.html')" class="sala-button" role="button" tabindex="0"
+                onkeypress="if(event.key==='Enter') cargarSala('salas/personalidad.html')">
+                <div class="sala-icon">🧠</div>
+                <div class="sala-content">
+                    <div class="sala-title">Sala 1: Personalidad</div>
+                    <div class="sala-desc">
+                        Descubre tu tipo de personalidad y cómo influye en tu futuro profesional
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sala 2: Áreas del Conocimiento -->
+            <div onclick="cargarSala('salas/areas.html')" class="sala-button" role="button" tabindex="0"
+                onkeypress="if(event.key==='Enter') cargarSala('salas/areas.html')">
+                <div class="sala-icon">💡</div>
+                <div class="sala-content">
+                    <div class="sala-title">Sala 2: Áreas del Conocimiento</div>
+                    <div class="sala-desc">
+                        Explora diferentes campos académicos y encuentra tu pasión
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sala Final -->
+            <div onclick="cargarSala('salas/aventura.html')" class="sala-button" role="button" tabindex="0"
+                onkeypress="if(event.key==='Enter') cargarSala('salas/aventura.html')">
+                <div class="sala-icon">🧭</div>
+                <div class="sala-content">
+                    <div class="sala-title">Sala Final: Tu Aventura</div>
+                    <div class="sala-desc">
+                        Vive una historia interactiva y recibe tu recomendación vocacional final
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <button onclick="mostrarInicio()" class="volver">← Volver al inicio</button>
+    </div>
+
+
+    <!-- Contenedor dinámico de salas -->
+    <div id="contenido" class="pantalla oculto"></div>
+
+    <script>
+
+        // Lógica para la Sala de Personalidad Vocacional
+        function iniciarSalaPersonalidad() {
+            const form = document.getElementById("formPersonalidad");
+
+            if (!form) return;
+
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
+
+                const respuestas = ["q1", "q2", "q3", "q4"];
+                const conteo = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
+
+                for (let r of respuestas) {
+                    const seleccion = document.querySelector(`input[name="${r}"]:checked`);
+                    if (seleccion) conteo[seleccion.value]++;
+                }
+
+                const tipo = Object.keys(conteo).reduce((a, b) =>
+                    conteo[a] > conteo[b] ? a : b
+                );
+
+                const resultado = document.getElementById("resultadoPersonalidad");
+                resultado.innerHTML = mensajePorTipo(tipo);
+            });
+        }
+
+        // Lógica para la Sala de Personalidad Vocacional
+        function iniciarSalaPersonalidad() {
+            const form = document.getElementById("formPersonalidad");
+
+            if (!form) return;
+
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
+
+                const respuestas = ["q1", "q2", "q3", "q4"];
+                const conteo = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
+
+                for (let r of respuestas) {
+                    const seleccion = document.querySelector(`input[name="${r}"]:checked`);
+                    if (seleccion) conteo[seleccion.value]++;
+                }
+
+                const tipo = Object.keys(conteo).reduce((a, b) =>
+                    conteo[a] > conteo[b] ? a : b
+                );
+
+                const resultado = document.getElementById("resultadoPersonalidad");
+                resultado.innerHTML = mensajePorTipo(tipo);
+            });
+        }
+
+        function iniciarSalaCodigo() {
+            const botonDesbloquear = document.getElementById('desbloquear');
+            if (!botonDesbloquear) return;
+
+            botonDesbloquear.addEventListener('click', function () {
+                const codigo = document.getElementById('codigo').value;
+                const mensaje = document.getElementById('mensaje');
+                const puerta = document.querySelector('.puerta');
+                const flash = document.getElementById('flash-effect');
+                const codigoSecreto = '126';
+
+                // Eliminar botón previo si ya existe
+                const botonExistente = document.getElementById('btn-ver-final');
+                if (botonExistente) botonExistente.remove();
+
+                if (codigo === codigoSecreto) {
+                    mensaje.textContent = '¡Código Correcto! Puerta Abriendo...';
+                    mensaje.className = 'mensaje correcto';
+                    mensaje.style.marginBottom = '20px';
+                    puerta.style.transform = 'scale(1.1)';
+
+                    // 🌟 Efecto visual de destello
+                    if (flash) {
+                        flash.classList.remove('oculto');
+                        flash.style.animation = 'none'; // reiniciar animación
+                        void flash.offsetWidth;
+                        flash.style.animation = 'flash 1s ease-out forwards';
+                        setTimeout(() => {
+                            flash.classList.add('oculto');
+                        }, 1000);
+                    }
+
+                    // 🎉 Crear botón estilizado
+                    const btnFinal = document.createElement('button');
+                    btnFinal.id = 'btn-ver-final';
+                    btnFinal.textContent = '🎉 Volver al menú';
+                    btnFinal.className = 'volver mt-8';
+
+                    btnFinal.addEventListener('click', () => {
+                        mostrarMenu();
+                    });
+
+                    // Insertar el botón en la puerta, debajo del mensaje
+                    puerta.appendChild(btnFinal);
+
+                    setTimeout(() => {
+                        puerta.style.transform = 'scale(1)';
+                    }, 1000);
+                } else {
+                    // Código incorrecto
+                    mensaje.textContent = '❌ Código Incorrecto. Intenta de nuevo.';
+                    mensaje.className = 'mensaje incorrecto';
+                    puerta.classList.add('incorrecto');
+
+                    setTimeout(() => {
+                        puerta.classList.remove('incorrecto');
+                    }, 500);
+                }
+            });
+        }
+
+        // Ejecutar solo en las páginas correctas
+        if (window.location.pathname.includes("personalidad.html")) {
+            iniciarSalaPersonalidad();
+        }
+
+        if (window.location.pathname.includes("areas.html")) {
+            iniciarSalaCodigo();
+        }
+
+
+
+
+        // Mensajes por tipo vocacional
+        function mensajePorTipo(tipo) {
+            const tipos = {
+                R: {
+                    nombre: "Realista",
+                    emoji: "🛠️",
+                    color: "#38bdf8", // azul celeste
+                    descripcion: "Te gusta trabajar con herramientas, máquinas y cosas físicas.",
+                    sugerencia: "Carreras sugeridas: Ingeniería, Mecatrónica, Construcción."
+                },
+                I: {
+                    nombre: "Investigador",
+                    emoji: "🔬",
+                    color: "#8b5cf6", // violeta
+                    descripcion: "Disfrutas analizar, investigar y resolver problemas complejos.",
+                    sugerencia: "Carreras sugeridas: Biología, Física, Medicina, Informática."
+                },
+                A: {
+                    nombre: "Artístico",
+                    emoji: "🎨",
+                    color: "#f43f5e", // rosado
+                    descripcion: "Expresas tu creatividad a través del arte, la música o el diseño.",
+                    sugerencia: "Carreras sugeridas: Diseño gráfico, Artes visuales, Publicidad."
+                },
+                S: {
+                    nombre: "Social",
+                    emoji: "🤝",
+                    color: "#22c55e", // verde
+                    descripcion: "Te importa ayudar y trabajar con otras personas.",
+                    sugerencia: "Carreras sugeridas: Psicología, Educación, Trabajo social."
+                },
+                E: {
+                    nombre: "Emprendedor",
+                    emoji: "💼",
+                    color: "#f59e0b", // dorado
+                    descripcion: "Eres persuasivo, ambicioso y disfrutas liderar.",
+                    sugerencia: "Carreras sugeridas: Administración, Negocios, Marketing."
+                },
+                C: {
+                    nombre: "Convencional",
+                    emoji: "📊",
+                    color: "#64748b", // gris azulado
+                    descripcion: "Prefieres estructuras, datos y tareas organizadas.",
+                    sugerencia: "Carreras sugeridas: Contaduría, Finanzas, Logística."
+                }
+            };
+
+            const info = tipos[tipo];
+            if (!info) return `<div>No se pudo determinar tu tipo de personalidad.</div>`;
+
+            return `
+    <div style="
+        max-width: 500px;
+        margin: 20px auto 0;
+        background-color: ${info.color}15;
+        border: 2px solid ${info.color};
+        padding: 20px 30px;
+        border-radius: 16px;
+        color: white;
+        text-align: center;
+        box-shadow: 0 0 15px ${info.color}55;
+        backdrop-filter: blur(8px);
+        animation: aparecer 0.6s ease-out;
+    ">
+        <h2 style="font-size: 22px; margin-bottom: 10px; color: ${info.color}">
+            ${info.emoji} Tipo: ${info.nombre}
+        </h2>
+        <p style="margin-bottom: 10px; font-size: 16px;">${info.descripcion}</p>
+        <strong style="font-size: 15px;">${info.sugerencia}</strong>
+    </div>
+`;
+
+        }
+
+
+        // Mostrar pantalla inicial al cargar
+        document.addEventListener("DOMContentLoaded", mostrarInicio);
+
+
+        function iniciarDragDrop() {
+
+            const draggables = document.querySelectorAll(".draggable");
+            const dropzones = document.querySelectorAll(".dropzone");
+
+
+
+            draggables.forEach(drag => {
+                drag.addEventListener("dragstart", () => {
+                    drag.classList.add("dragging");
+                });
+
+                drag.addEventListener("dragend", () => {
+                    drag.classList.remove("dragging");
+                });
+            });
+
+            dropzones.forEach(zone => {
+                zone.addEventListener("dragover", e => {
+                    e.preventDefault();
+                    zone.classList.add("over");
+                });
+
+                zone.addEventListener("dragleave", () => {
+                    zone.classList.remove("over");
+                });
+
+                zone.addEventListener("drop", e => {
+                    e.preventDefault();
+                    const dragged = document.querySelector(".dragging");
+                    if (dragged) {
+                        zone.innerHTML = '';
+                        zone.appendChild(dragged);
+                        zone.classList.remove("over");
+                    }
+                });
+            });
+        }
+
+        // Verifica si el ícono está en el área correcta
+        function verificarRespuestas() {
+            const dropzones = document.querySelectorAll(".dropzone");
+            let correctas = 0;
+
+            dropzones.forEach(zone => {
+                const icono = zone.querySelector(".draggable");
+                if (icono && icono.dataset.area === zone.dataset.accept) {
+                    correctas++;
+                }
+            });
+
+            const resultado = document.getElementById("resultadoRompecabezas");
+            resultado.innerHTML = "";
+
+            if (correctas === dropzones.length) {
+                // Contenedor para resultado correcto
+                const div = document.createElement("div");
+                div.className = "resultado-ok";
+
+                div.innerHTML = `
+            <p class="mensaje-ok">
+                ✅ ¡Muy bien! Todos los íconos están bien ubicados.
+            </p>
+        `;
+
+                // Crear botón "Siguiente"
+                const btn = document.createElement("button");
+                btn.textContent = "➡️ Siguiente";
+                btn.className = "boton-mediano mt-4";
+                btn.onclick = () => cargarSala("salas/profesiones.html");
+
+                div.appendChild(btn);
+                resultado.appendChild(div);
+
+            } else {
+                resultado.innerHTML = `
+            <p class="mensaje-error">
+                ❌ Tienes ${correctas} bien de ${dropzones.length}. ¡Sigue intentando!
+            </p>
+        `;
+            }
+        }
+
+
+
+
+        // Crear partículas flotantes
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 20;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+
+                // Posición aleatoria
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+
+                // Colores aleatorios
+                const colors = ['rgba(255, 105, 180, 0.6)', 'rgba(145, 213, 255, 0.6)', 'rgba(255, 204, 255, 0.6)'];
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Funciones de navegación (mantener las originales)
+        function mostrarMenu() {
+            document.getElementById('inicio').classList.add('oculto');
+            document.getElementById('menu').classList.remove('oculto');
+        }
+
+        function mostrarInicio() {
+            document.getElementById('menu').classList.add('oculto');
+            document.getElementById('contenido').classList.add('oculto');
+            document.getElementById('inicio').classList.remove('oculto');
+        }
+
+
+        // Inicializar partículas cuando se carga la página
+        window.addEventListener('load', createParticles);
+
+        // Agregar efectos de sonido simulados (opcional)
+        document.addEventListener('click', function (e) {
+            if (e.target.tagName === 'BUTTON') {
+                // Aquí podrías agregar efectos de sonido
+                e.target.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    e.target.style.transform = '';
+                }, 150);
+            }
+        });
+
+
+
+
+        function mostrarInicio() {
+            document.getElementById('menu').classList.add('oculto');
+            document.getElementById('contenido').classList.add('oculto');
+            document.getElementById('inicio').classList.remove('oculto');
+        }
+
+        function mostrarMenu() {
+            document.getElementById('inicio').classList.add('oculto');
+            document.getElementById('contenido').classList.add('oculto');
+            document.getElementById('menu').classList.remove('oculto');
+        }
+
+        function cargarSala(url) {
+            fetch(url)
+                .then(res => {
+                    if (!res.ok) throw new Error('No se pudo cargar la sala');
+                    return res.text();
+                })
+                .then(html => {
+                    document.getElementById('menu').classList.add('oculto');
+                    const contenido = document.getElementById('contenido');
+                    contenido.innerHTML = html;
+                    contenido.classList.remove('oculto');
+
+                    // ⬇️ Lógica adicional según la sala cargada
+                    if (url.includes("personalidad")) {
+                        iniciarSalaPersonalidad();
+                    }
+
+                    if (url.includes("areas")) {
+                        iniciarDragDrop();
+                    }
+
+                    if (url.includes("profesiones")) {
+                        iniciarSalaProfesiones();
+                    }
+
+                    if (url.includes("codigo")) {
+                        iniciarSalaCodigo();
+                    }
+
+                    if (url.includes("aventura")) {
+                        // Esperamos a que el contenido cargado esté en el DOM antes de asignar eventos
+                        setTimeout(() => {
+                            const btn = document.getElementById("iniciar-aventura");
+                            if (btn) {
+                                btn.addEventListener("click", iniciarAventura);
+                            }
+                        }, 100);
+                    }
+
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                })
+                .catch(error => {
+                    document.getElementById('contenido').innerHTML = `
+                <p style="color: red;">❌ Error al cargar la sala: ${url}</p>
+                <button onclick="mostrarMenu()" class="volver">← Volver al menú</button>
+            `;
+                    document.getElementById('menu').classList.add('oculto');
+                    document.getElementById('contenido').classList.remove('oculto');
+                });
+        }
+
+
+        const escenas = [
+            {
+                texto: "🎓 Es tu primer día de universidad. El campus está lleno de energía y oportunidades. Te sientes emocionado pero también un poco nervioso. ¿Qué decides hacer primero?",
+                opciones: [
+                    { texto: "👥 Conocer a mis compañeros y hacer nuevos amigos", valor: "social" },
+                    { texto: "📚 Ir a la biblioteca para explorar y ambientarme", valor: "investigativo" }
+                ]
+            },
+            {
+                texto: "🤝 Durante la primera semana, te das cuenta de que hay diferentes maneras de abordar los estudios. ¿Cuál prefieres?",
+                opciones: [
+                    { texto: "👑 Organizar grupos de estudio y liderar proyectos", valor: "lider" },
+                    { texto: "🔍 Estudiar solo y profundizar en los temas", valor: "analitico" }
+                ]
+            },
+            {
+                texto: "⚡ Tu profesor presenta un proyecto final con dos opciones. ¿Cuál eliges?",
+                opciones: [
+                    { texto: "🎯 Un proyecto práctico que resuelva un problema real", valor: "practico" },
+                    { texto: "🧪 Una investigación teórica sobre un tema innovador", valor: "teorico" }
+                ]
+            },
+            {
+                texto: "🏢 Tienes la oportunidad de hacer una pasantía. ¿Qué tipo de empresa te atrae más?",
+                opciones: [
+                    { texto: "🚀 Una startup tecnológica innovadora", valor: "innovador" },
+                    { texto: "🏛️ Una organización social o educativa", valor: "social" }
+                ]
+            },
+            {
+                texto: "💼 En tu trabajo de medio tiempo, surge un conflicto entre compañeros. ¿Cómo reaccionas?",
+                opciones: [
+                    { texto: "🤝 Medias entre ambos para encontrar una solución", valor: "mediador" },
+                    { texto: "📊 Analizas la situación objetivamente antes de actuar", valor: "analitico" }
+                ]
+            }
+        ];
+
+        // Variables de estado para la aventura
+
+
+        function iniciarAventura() {
+            // Reiniciar valores
+            indice = 0;
+            resultados = [];
+
+            const intro = document.getElementById('intro');
+            const boton = document.getElementById('iniciar-aventura');
+            const historia = document.getElementById('historia');
+
+            // Oculta solo la intro y el botón
+            intro.style.display = 'none';
+            boton.style.display = 'none';
+
+            // Muestra la historia
+            historia.style.display = 'block';
+            mostrarEscena();
+        }
+
+
+
+        function mostrarEscena() {
+            const escena = escenas[indice];
+            const contenedor = document.getElementById("historia");
+
+            contenedor.innerHTML = `
+        <div class="pregunta">${escena.texto}</div>
+        <div class="opciones">
+            ${escena.opciones.map(op => `<button onclick="seleccionar('${op.valor}')">${op.texto}</button>`).join('')}
+        </div>
+    `;
+        }
+
+        function seleccionar(valor) {
+            resultados.push(valor);
+            indice++;
+            if (indice < escenas.length) {
+                mostrarEscena();
+            } else {
+                mostrarResultado();
+            }
+        }
+
+        function mostrarResultado() {
+            const resumen = resultados.reduce((acc, val) => {
+                acc[val] = (acc[val] || 0) + 1;
+                return acc;
+            }, {});
+
+            const perfil = Object.keys(resumen).reduce((a, b) => resumen[a] > resumen[b] ? a : b);
+
+            const recomendaciones = {
+                social: {
+                    titulo: "🤝 PERFIL SOCIAL",
+                    descripcion: "Te destacas en el trabajo en equipo y la comunicación...",
+                    carreras: "Psicología, Trabajo Social, Comunicación Social..."
+                },
+                investigativo: {
+                    titulo: "🔍 PERFIL INVESTIGATIVO",
+                    descripcion: "Te apasiona el conocimiento y la búsqueda de respuestas...",
+                    carreras: "Investigación Científica, Medicina, Biología..."
+                },
+                lider: {
+                    titulo: "👑 PERFIL DE LIDERAZGO",
+                    descripcion: "Tienes habilidades naturales para dirigir y organizar...",
+                    carreras: "Administración, Derecho, Ciencias Políticas..."
+                },
+                analitico: {
+                    titulo: "🧠 PERFIL ANALÍTICO",
+                    descripcion: "Tu mente lógica te lleva hacia carreras técnicas...",
+                    carreras: "Ingeniería, Estadística, Economía..."
+                },
+                practico: {
+                    titulo: "🛠️ PERFIL PRÁCTICO",
+                    descripcion: "Te motiva crear soluciones tangibles...",
+                    carreras: "Arquitectura, Ingeniería Civil, Diseño Industrial..."
+                },
+                teorico: {
+                    titulo: "📚 PERFIL TEÓRICO",
+                    descripcion: "Te fascina el mundo de las ideas...",
+                    carreras: "Filosofía, Literatura, Historia..."
+                },
+                innovador: {
+                    titulo: "🚀 PERFIL INNOVADOR",
+                    descripcion: "Te emociona la tecnología y crear cosas nuevas...",
+                    carreras: "Software, UX/UI, Biotecnología..."
+                },
+                mediador: {
+                    titulo: "⚖️ PERFIL MEDIADOR",
+                    descripcion: "Tienes el don de resolver conflictos y crear armonía...",
+                    carreras: "Derecho, Psicología, Mediación..."
+                }
+            };
+
+            const resultado = recomendaciones[perfil] || recomendaciones.social;
+
+            const contenedor = document.getElementById("historia");
+            contenedor.innerHTML = `
+        <div class="resultado-final">
+            <h2>${resultado.titulo}</h2>
+            <p><strong>📋 Descripción:</strong><br>${resultado.descripcion}</p>
+            <p><strong>🎯 Carreras recomendadas:</strong><br>${resultado.carreras}</p>
+            <p><strong>💡 Consejo:</strong> Esta es solo una guía. Explora más sobre estas carreras y considera tus intereses personales.</p>
+          
+        </div>
+    `;
+        }
+
+
+
+        // Event listener para iniciar
+        document.addEventListener('DOMContentLoaded', function () {
+            const botonIniciar = document.getElementById("iniciar-aventura");
+            if (botonIniciar) {
+                botonIniciar.addEventListener("click", iniciarAventura);
+            }
+        });
+
+        function iniciarSalaProfesiones() {
+            const pista = document.getElementById("pista");
+            const opciones = document.getElementById("opciones");
+            const resultado = document.getElementById("resultadoProfesion");
+
+            const preguntas = [
+                {
+                    pista: "🖌️ 🎨 👗",
+                    opciones: ["Diseñador de Moda", "Médico", "Ingeniero"],
+                    respuesta: "Diseñador de Moda"
+                },
+                {
+                    pista: "💉 🩺 🧬",
+                    opciones: ["Ingeniero", "Médico", "Artista"],
+                    respuesta: "Médico"
+                },
+                {
+                    pista: "💻 🧠 ⚙️",
+                    opciones: ["Psicólogo", "Ingeniero", "Chef"],
+                    respuesta: "Ingeniero"
+                },
+                {
+                    pista: "📚 🍎 👨‍🏫",
+                    opciones: ["Maestro", "Chef", "Abogado"],
+                    respuesta: "Maestro"
+                },
+                {
+                    pista: "⚖️ 📄 🧑‍⚖️",
+                    opciones: ["Contador", "Abogado", "Policía"],
+                    respuesta: "Abogado"
+                },
+                {
+                    pista: "🍳 🧂 🔪",
+                    opciones: ["Diseñador", "Chef", "Médico"],
+                    respuesta: "Chef"
+                },
+                {
+                    pista: "🎬 🎥 🎭",
+                    opciones: ["Actor", "Ingeniero", "Músico"],
+                    respuesta: "Actor"
+                }
+
+            ];
+
+            let actual = 0;
+
+            function cargarPregunta() {
+                const pregunta = preguntas[actual];
+                pista.textContent = pregunta.pista;
+                opciones.innerHTML = "";
+
+                pregunta.opciones.forEach(op => {
+                    const btn = document.createElement("button");
+                    btn.textContent = op;
+                    btn.className = "opcion-button";
+                    btn.onclick = () => verificar(op, pregunta.respuesta);
+                    opciones.appendChild(btn);
+                });
+
+                resultado.textContent = "";
+            }
+
+
+
+            function verificar(seleccionada, correcta) {
+                if (seleccionada === correcta) {
+                    // Mensaje de acierto
+                    const mensaje = document.createElement("div");
+                    mensaje.textContent = "✅ ¡Correcto!";
+                    mensaje.className = "mb-4 font-semibold text-lg text-green-300"; // puedes ajustar color según tu diseño
+                    resultado.appendChild(mensaje);
+
+                    // Botón correspondiente
+
+                    const btn = document.createElement("button");
+                    btn.className = "boton-pequeno"; // Usa tu clase reutilizable
+
+                    if (actual < preguntas.length - 1) {
+                        btn.textContent = "➡️ Siguiente pista";
+                        btn.onclick = () => {
+                            actual++;
+                            cargarPregunta();
+                        };
+                    } else {
+                        btn.textContent = "🔐 Ir a Sala Final";
+                        btn.onclick = () => cargarSala("salas/codigo.html");
+                    }
+
+                    resultado.appendChild(btn);
+                } else {
+                    resultado.innerHTML = `<div class="text-red-400 font-semibold">❌ Incorrecto. Intenta otra opción.</div>`;
+                }
+            }
+
+            cargarPregunta();
+        }
+    </script>
+    <div id="flash-effect" class="oculto"></div>
+
+</body>
+
+</html>

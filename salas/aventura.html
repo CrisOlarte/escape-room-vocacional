@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Aventura Vocacional</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1f1f2e, #2e2e3e);
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .aventura-container {
+            background-color: #2b2b3d;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 700px;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.2);
+            text-align: center;
+        }
+
+
+
+        .pregunta {
+            margin-bottom: 20px;
+            font-size: 1.25rem;
+            line-height: 1.6;
+            background: rgba(0, 255, 204, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #00ffcc;
+        }
+
+        .pregunta p {
+            margin-bottom: 15px;
+        }
+
+        .opciones {
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .opciones button {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            flex: 1 1 calc(50% - 10px);
+            font-size: 16px;
+            border: 2px solid transparent;
+            color: white;
+            text-align: left;
+        }
+
+        .opciones button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .boton-pequeno {
+            font-size: 0.9rem;
+            padding: 8px 20px;
+            border-radius: 12px;
+            background-color: #ff66b2;
+            color: white;
+            box-shadow: 0 4px 8px rgba(255, 102, 178, 0.4);
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .boton-pequeno:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 102, 178, 0.5);
+        }
+
+        .resultado-final {
+            font-size: 1.3rem;
+            margin-top: 20px;
+            color: #00ffcc;
+            animation: aparecer 1s ease forwards;
+            background: rgba(0, 255, 204, 0.1);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #00ffcc;
+        }
+
+        .volver-btn {
+            font-size: 0.9rem;
+            padding: 8px 20px;
+            border-radius: 12px;
+            background-color: #ff66b2;
+            color: white;
+            box-shadow: 0 4px 8px rgba(255, 102, 178, 0.4);
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 20px;
+        }
+
+        .volver-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 102, 178, 0.5);
+        }
+
+        .iniciar-btn {
+            background: linear-gradient(45deg, #00ffcc, #00bcd4);
+            color: #1f1f2e;
+            padding: 20px 40px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
+        }
+
+        .iniciar-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 255, 204, 0.5);
+        }
+
+        .intro {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #ccc;
+        }
+
+        /* Animaciones para transiciones suaves */
+        .seccion {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .seccion.ocultar {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        .seccion.mostrar {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes aparecer {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ff69b4, #ffccff, #91d5ff);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientText 3s ease infinite;
+            font-weight: 800;
+            text-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="aventura-container">
+        <div id="inicio" class="seccion">
+            <h1>Tu Aventura Vocacional</h1>
+
+            <div class="intro" id="intro">
+                ¡Bienvenido a tu aventura vocacional! A través de diferentes situaciones universitarias y profesionales,
+                descubrirás qué carrera se adapta mejor a tu personalidad y preferencias.
+                <br><br>
+                Cada decisión que tomes revelará aspectos importantes de tu perfil vocacional.
+            </div>
+
+            <button id="iniciar-aventura" class="main-button glow-effect">🚀 Comenzar Aventura</button>
+        </div>
+
+
+        <div id="historia" class="seccion" style="display: none;">
+            <!-- Aquí se cargará la historia dinámicamente -->
+        </div>
+    </div>
+
+    <!-- Enlace a tu archivo JavaScript -->
+    <script src="index.js"></script>
+</body>
+
+</html>

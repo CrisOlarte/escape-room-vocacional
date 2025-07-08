@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puerta Digital</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        .puerta {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            transition: transform 0.5s;
+        }
+
+        input[type="text"] {
+            width: 100px;
+            padding: 10px;
+            margin: 20px 0;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #00ff00;
+            color: #000;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #00cc00;
+        }
+
+        .mensaje {
+            margin-top: 20px;
+            font-size: 18px;
+            height: 30px;
+        }
+
+        .correcto {
+            color: #00ff00;
+            animation: abrir 1s forwards;
+        }
+
+        .incorrecto {
+            color: #ff0000;
+            animation: vibrar 0.5s forwards;
+        }
+
+        .entrada-codigo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .entrada-codigo input {
+            width: 120px;
+        }
+
+       .mensaje {
+    margin-top: 1.5rem;
+    font-size: 1.1rem;
+    min-height: 1.5rem;
+    text-align: center;
+    width: 100%;
+}
+
+        .entrada-codigo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+
+
+        @keyframes abrir {
+            0% {
+                transform: scale(1);
+            }
+
+            100% {
+                transform: scale(1.1);
+            }
+        }
+
+        @keyframes vibrar {
+            0% {
+                transform: translate(0);
+            }
+
+            25% {
+                transform: translate(-5px);
+            }
+
+            50% {
+                transform: translate(5px);
+            }
+
+            75% {
+                transform: translate(-5px);
+            }
+
+            100% {
+                transform: translate(0);
+            }
+            
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="puerta">
+            <h1>🔐 Puerta Digital Cerrada</h1>
+            <p>Ingresa el código secreto para desbloquear</p>
+
+            <!-- 🧩 Adivinanza -->
+            <p class="pista-final">
+                🧠 Tengo 3 cifras.<br>
+                Soy mayor que 100 y menor que 200.<br>
+                Soy múltiplo de 7 y la suma de mis dígitos da 9.<br>
+                <strong>¿Qué número soy?</strong>
+            </p>
+
+            <div class="entrada-codigo">
+                <input type="text" id="codigo" maxlength="4" placeholder="Código" />
+                <button id="desbloquear">🔓 Desbloquear</button>
+            </div>
+            <div id="mensaje" class="mensaje"></div>
+
+        </div>
+    </div>
+</body>
+
+
+</html>

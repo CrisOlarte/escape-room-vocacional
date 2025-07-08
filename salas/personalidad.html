@@ -1,0 +1,62 @@
+<div id="sala-personalidad" class="pantalla">
+    <h2 class="text-2xl font-bold mb-4">🧠 Sala 1: Personalidad Vocacional</h2>
+    <form id="formPersonalidad" class="space-y-6">
+
+        <!-- Pregunta 1 -->
+        <div class="pregunta ">
+            <p class="font-semibold mb-2 ">1. ¿Qué actividad prefieres?</p>
+            <div class="opciones " >
+                <label><input type="radio" name="q1" value="R"> 🛠️ Reparar o construir algo</label>
+                <label><input type="radio" name="q1" value="I"> 🔬 Investigar o experimentar</label>
+                <label><input type="radio" name="q1" value="A"> 🎨 Dibujar, escribir o actuar</label>
+                <label><input type="radio" name="q1" value="S"> 👥 Ayudar a alguien</label>
+                <label><input type="radio" name="q1" value="E"> 💼 Liderar un equipo</label>
+                <label><input type="radio" name="q1" value="C"> 📋 Organizar documentos</label>
+            </div>
+        </div>
+
+        <!-- Pregunta 2 -->
+        <div class="pregunta">
+            <p class="font-semibold mb-2">2. ¿Qué frase te representa mejor?</p>
+            <div class="opciones space-y-3">
+                <label><input type="radio" name="q2" value="R"> Me gusta trabajar con mis manos</label>
+                <label><input type="radio" name="q2" value="I"> Me interesa descubrir cómo funciona el mundo</label>
+                <label><input type="radio" name="q2" value="A"> Necesito expresar mis ideas y emociones</label>
+                <label><input type="radio" name="q2" value="S"> Me importa el bienestar de los demás</label>
+                <label><input type="radio" name="q2" value="E"> Me gusta tomar decisiones</label>
+                <label><input type="radio" name="q2" value="C"> Soy muy detallista y organizado</label>
+            </div>
+        </div>
+
+        <!-- Pregunta 3 -->
+        <div class="pregunta">
+            <p class="font-semibold mb-2">3. ¿En qué ambiente te sentirías más cómodo?</p>
+            <div class="opciones">
+                <label><input type="radio" name="q3" value="R"> 🛠️ Taller o campo de trabajo</label>
+                <label><input type="radio" name="q3" value="I"> 🧪 Laboratorio o biblioteca</label>
+                <label><input type="radio" name="q3" value="A"> 🎭 Escenario o estudio</label>
+                <label><input type="radio" name="q3" value="S"> 👨‍🏫 Aula o centro comunitario</label>
+                <label><input type="radio" name="q3" value="E"> 🏛️ Oficina de dirección</label>
+                <label><input type="radio" name="q3" value="C"> 🗂️ Oficina administrativa</label>
+            </div>
+        </div>
+
+        <!-- Pregunta 4 -->
+        <div class="pregunta">
+            <p class="font-semibold mb-2">4. ¿Qué habilidad destaca más en ti?</p>
+            <div class="opciones">
+                <label><input type="radio" name="q4" value="R"> Fuerza o coordinación manual</label>
+                <label><input type="radio" name="q4" value="I"> Análisis y lógica</label>
+                <label><input type="radio" name="q4" value="A"> Creatividad y expresión</label>
+                <label><input type="radio" name="q4" value="S"> Comunicación empática</label>
+                <label><input type="radio" name="q4" value="E"> Liderazgo</label>
+                <label><input type="radio" name="q4" value="C"> Precisión y orden</label>
+            </div>
+        </div>
+
+        <button type="submit" class="main-button glow-effect">Ver resultado</button>
+    </form>
+
+    <div id="resultadoPersonalidad" class="mt-6 text-lg font-bold"></div>
+    <button onclick="mostrarMenu()" class="volver">← Volver al menu</button>
+</div>
